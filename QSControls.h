@@ -10,11 +10,5 @@
 #define kTopMargin 10
 #define kWaitScreenTag 10001
 #define kWaitScreenSpinner 10002
-/**/
-#define kShortCircuitAssignmentId 0
-/**/
-/**
-#define kShortCircuitAssignmentId 1070
-/**/
 
 #endif __QSCONTROLS_INCLUDE__
