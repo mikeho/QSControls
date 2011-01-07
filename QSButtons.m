@@ -41,7 +41,7 @@
 		objFrame = CGRectMake(kSideMargin, intTop, [UIScreen mainScreen].bounds.size.width - kSideMargin*2, 40);
 	}
 
-	return [Buttons createButtonWithText:strText Background:intType Frame:objFrame];
+	return [QSButtons createButtonWithText:strText Background:intType Frame:objFrame];
 }
 
 + (void)setHeight:(CGFloat)fltHeight ForButton:(UIButton *)btnButton {

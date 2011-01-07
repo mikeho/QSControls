@@ -77,7 +77,7 @@
 	[lblContent setText:strContent];
 	[lblContent setFont:[UIFont systemFontOfSize:[UIFont labelFontSize]]];
 	[lblContent setBackgroundColor:[UIColor clearColor]];
-	[Labels trimFrameHeightForLabel:lblContent];
+	[QSLabels trimFrameHeightForLabel:lblContent];
 
 	// Add it to the Content Background Panel
 	[lblContent autorelease];

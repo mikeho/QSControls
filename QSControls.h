@@ -33,6 +33,7 @@
 
 #define kSideMargin 10
 #define kTopMargin 10
+
 #define kWaitScreenTag 10001
 #define kWaitScreenSpinner 10002
 
