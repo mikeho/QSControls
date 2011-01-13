@@ -27,7 +27,34 @@
 #import <UIKit/UIKit.h>
 
 @interface QSModalHttpClient : NSObject {
+	NSString * _strUrl;
+	NSString * _strHttpMethod;
+	NSInteger _intTimeoutInterval;
+	
+	NSString * _strMessage;
+	NSString * _strMessageDuringUpload;
 
+	NSInteger _intHttpStatusCode;
+	NSMutableData * _objResponseData;
+
+	UIAlertView * _objAlertView;
+	CFRunLoopRef _objCurrentLoop;
 }
+
+@property (nonatomic, retain, getter=url, setter=setUrl) NSString * _strUrl;
+@property (nonatomic, retain, getter=httpMethod, setter=setHttpMethod) NSString * _strHttpMethod;
+@property (nonatomic, assign, getter=timeoutInterval, setter=setTimeoutInterval) NSInteger _intTimeoutInterval;
+
+@property (nonatomic, retain, getter=message, setter=setMessage) NSString * _strMessage;
+@property (nonatomic, retain, getter=messageDuringUpload, setter=setMessageDuringUpload) NSString * _strMessageDuringUpload;
+
+@property (nonatomic, assign, getter=httpStatusCode) NSInteger _intHttpStatusCode;
+@property (nonatomic, retain, getter=responseData) NSData * _objResponseData;
+
+- (QSModalHttpClient *)initWithUrl:(NSString *)strUrl HttpMethod:(NSString *)strHttpMethod;
+
+- (void)cleanupFromPreviousRequests;
+- (void)sendString:(NSString *)strRequest;
+- (void)sendFile:(NSString *)strPath;
 
 @end

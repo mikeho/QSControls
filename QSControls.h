@@ -30,6 +30,7 @@
 #import "QSButtons.h"
 #import "QSActivityIndicators.h"
 #import "QSLabels.h"
+#import "QSModalHttpClient.h"
 
 #define kSideMargin 10
 #define kTopMargin 10
