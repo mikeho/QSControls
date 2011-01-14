@@ -65,12 +65,14 @@
 		[_objResponseData release];
 		_objResponseData = nil;
 	}
+
+	_intHttpStatusCode = 0;
 }
 
 #pragma mark -
 #pragma mark Pubic Execution Methods
 
-- (void)sendWithData:(id)objRequestContent StreamFlag:(bool)blnStreamFlag {
+- (bool)sendWithData:(id)objRequestContent StreamFlag:(bool)blnStreamFlag {
 	// Cleanup from Previous Requests (if applicable)
 	[self cleanupFromPreviousRequests];
 	
@@ -122,15 +124,18 @@
 	[objUrl release];
 	[objRequest release];
 	[objConnection release];
+
+	// the most simplistic way of determining whether or not there is an "error"
+	return ((_intHttpStatusCode >= 200) && (_intHttpStatusCode < 300));
 }
 
-- (void)sendString:(NSString *)strRequest {
-	[self sendWithData:[strRequest dataUsingEncoding:NSUTF8StringEncoding] StreamFlag:false];
+- (bool)sendString:(NSString *)strRequest {
+	return [self sendWithData:[strRequest dataUsingEncoding:NSUTF8StringEncoding] StreamFlag:false];
 }
 
-- (void)sendFile:(NSString *)strFilePath {
+- (bool)sendFile:(NSString *)strFilePath {
 	_intRequestDataSize = [QSFileManager fileSize:strFilePath];
-	[self sendWithData:[NSInputStream inputStreamWithFileAtPath:strFilePath] StreamFlag:true];
+	return [self sendWithData:[NSInputStream inputStreamWithFileAtPath:strFilePath] StreamFlag:true];
 }
 
 #pragma mark -
@@ -204,6 +209,21 @@
 	[_objAlertView dismissWithClickedButtonIndex:0 animated:false];
 	[_objAlertView release];
 	_objAlertView = nil;
+
+	// Check Status Code
+	if ((_intHttpStatusCode >= 200) && (_intHttpStatusCode < 300)) {
+		// Looks good!
+		// At this point, we don't need to do anything
+	} else {
+		// Oops -- an HTTP status code indicating an issue / error
+		UIAlertView * objAlert = [[UIAlertView alloc] initWithTitle:@"Connection Error"
+															message:[NSString stringWithFormat:@"Received error status code '%d' from the server.", _intHttpStatusCode]
+														   delegate:nil
+												  cancelButtonTitle:@"Okay"
+												  otherButtonTitles:nil];
+		[objAlert show];
+		[objAlert release];
+	}
 
 	// Return back to the loop
 	CFRunLoopStop(CFRunLoopGetCurrent());

@@ -57,9 +57,9 @@
 
 - (void)cleanupFromPreviousRequests;
 
-- (void)sendWithData:(id)objRequestContent StreamFlag:(bool)blnStreamFlag;
-- (void)sendString:(NSString *)strRequest;
-- (void)sendFile:(NSString *)strFilePath;
+- (bool)sendWithData:(id)objRequestContent StreamFlag:(bool)blnStreamFlag;
+- (bool)sendString:(NSString *)strRequest;
+- (bool)sendFile:(NSString *)strFilePath;
 
 - (NSString *)getResponseAsString;
 - (NSData *)getResponseAsRawData;
