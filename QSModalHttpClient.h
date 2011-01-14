@@ -39,6 +39,7 @@
 	NSMutableData * _objResponseData;
 
 	NSInteger _intRequestDataSize;
+	NSInteger _intResponseDataSize;
 	UIAlertView * _objAlertView;
 	CFRunLoopRef _objCurrentLoop;
 }

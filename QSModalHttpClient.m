@@ -151,7 +151,7 @@
 	_objAlertView = nil;
 
 	UIAlertView * objAlert = [[UIAlertView alloc] initWithTitle:@"Connection Error"
-														message:@"Could not connect to the\nVeriFacts Server."
+														message:@"Could not connect to the server."
 													   delegate:nil
 											  cancelButtonTitle:@"Okay"
 											  otherButtonTitles:nil];
@@ -262,10 +262,38 @@
 	} else {
 		_intHttpStatusCode = [(NSHTTPURLResponse *)response statusCode];
 	}
+
+	if (![response respondsToSelector:@selector(expectedContentLength)]) {
+		_intResponseDataSize = 0;
+	} else {
+		_intResponseDataSize = [response expectedContentLength];
+	}
+	
+	// Update Messaging
+	if (_strMessage == nil)
+		[_objAlertView setTitle:@"Please wait..."];
+	else
+		[_objAlertView setTitle:_strMessage];
+
+	// Update Progress
+	UILabel * lblProgress = (UILabel *) [_objAlertView viewWithTag:211];
+	[lblProgress setFrame:CGRectMake(lblProgress.frame.origin.x, lblProgress.frame.origin.y, 0, lblProgress.frame.size.height)];		
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
 	[_objResponseData appendData:data];
+
+	// Update Progress
+	UILabel * lblBorder = (UILabel *) [_objAlertView viewWithTag:210];
+	UILabel * lblProgress = (UILabel *) [_objAlertView viewWithTag:211];
+
+	CGFloat fltComplete = 0;
+	if (_intResponseDataSize > 0) {
+		fltComplete = (1.0 * [_objResponseData length]) / (1.0 * _intResponseDataSize);
+	}
+	
+	[lblProgress setFrame:CGRectMake(lblProgress.frame.origin.x, lblProgress.frame.origin.y, fltComplete * lblBorder.frame.size.width, lblProgress.frame.size.height)];	
+	NSLog(@"DOWNLOAD: %i / %i", [_objResponseData length], _intResponseDataSize);
 }
 
 #pragma mark -
