@@ -38,6 +38,9 @@
 @synthesize _objResponseData;
 
 
+#pragma mark -
+#pragma mark Initializers and Housekeeping
+
 
 - (QSModalHttpClient *)initWithUrl:(NSString *)strUrl HttpMethod:(NSString *)strHttpMethod {
 	if ([self init]) {
@@ -65,13 +68,16 @@
 	}
 }
 
-- (void)sendString:(NSString *)strRequest {
+#pragma mark -
+#pragma mark Pubic Execution Methods
+
+- (void)sendWithData:(id)objRequestContent StreamFlag:(bool)blnStreamFlag {
 	// Cleanup from Previous Requests (if applicable)
 	[self cleanupFromPreviousRequests];
-
+	
 	// Setup the Response Data Placeholder
 	_objResponseData = [[NSMutableData alloc] init];
-
+	
 	// Show the Alert View
 	NSString * strMessage;
 	if (_strMessageDuringUpload == nil) {
@@ -81,51 +87,63 @@
 			strMessage = _strMessage;
 	} else
 		strMessage = _strMessageDuringUpload;
-
-	_objAlertView = [[UIAlertView alloc] initWithTitle:strMessage message:@"" delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
+	
+	_objAlertView = [[UIAlertView alloc] initWithTitle:strMessage message:@"\n" delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
 	[_objAlertView show];
+
+	// Add the "Spinner"
+	UIActivityIndicatorView * objWaitIcon = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+	[objWaitIcon setTag:kWaitScreenSpinner];
+	objWaitIcon.center = CGPointMake(_objAlertView.bounds.size.width / 2.0f, _objAlertView.bounds.size.height - 70.0f);
+//	objWaitIcon.center = CGPointMake(284 / 2.0f, 135 - 40.0f);
+	[objWaitIcon startAnimating];
+	[_objAlertView addSubview:objWaitIcon];
+	[objWaitIcon release];
 
 	// Generate the Request
 	NSURL * objUrl = [[NSURL alloc] initWithString:_strUrl];
 	NSMutableURLRequest * objRequest = [[NSMutableURLRequest alloc] initWithURL:objUrl];
 	[objRequest setTimeoutInterval:_intTimeoutInterval];
 	[objRequest setHTTPMethod:_strHttpMethod];
+	
+	if (blnStreamFlag) {
+		[objRequest setHTTPBodyStream:objRequestContent];
+	} else {
+		[objRequest setHTTPBody:objRequestContent];
+	}
 
-	[objRequest setHTTPBody:[strRequest dataUsingEncoding:NSUTF8StringEncoding]];
 	NSURLConnection * objConnection = [[NSURLConnection alloc] initWithRequest:objRequest delegate:self];
 	
 	// Perform the Request
 	[objConnection start];
-
+	
 	CFRunLoopRun();
-
+	
 	// Cleanup
 	[objUrl release];
 	[objRequest release];
 	[objConnection release];
-//	
-//	NSArray * objPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true);
-//	NSString * objDocumentsDirectory = [objPaths objectAtIndex:0];
-//	NSString * objWriteableDbPath = [objDocumentsDirectory stringByAppendingPathComponent:@"verifacts_ios.db"];
-//	
-//	[objRequest setHTTPBodyStream:[NSInputStream inputStreamWithFileAtPath:objWriteableDbPath]];
-//	
-//	
-//	//		[objRequest setHTTPBody:[[NSString stringWithFormat:@"<loginRequest username=\"%@\" password=\"%@\"/>",
-//	//								 [objUsername Value], [objPassword Value]] dataUsingEncoding:NSUTF8StringEncoding]];
-//	NSURLConnection * objConnection = [[NSURLConnection alloc] initWithRequest:objRequest delegate:self];
-//	
-//	[objConnection start];
-//	[objUrl release];
-//	[objRequest release];
-//	[objConnection release];
+}
+
+- (void)sendString:(NSString *)strRequest {
+	[self sendWithData:[strRequest dataUsingEncoding:NSUTF8StringEncoding] StreamFlag:false];
 }
 
 - (void)sendFile:(NSString *)strPath {
+	NSFileManager * objFileManager = [[NSFileManager alloc] init];
+	NSDictionary * dctFileAttributes = [objFileManager attributesOfItemAtPath:strPath error:NULL];
+	[objFileManager release];
+	
+	_intRequestDataSize = [dctFileAttributes fileSize];
+	[self sendWithData:[NSInputStream inputStreamWithFileAtPath:strPath] StreamFlag:true];
+}
+
+- (NSString *)getResponseAsString {
+	return @"Hello, world!";
 }
 
 #pragma mark -
-#pragma mark Server Connection
+#pragma mark Server Connection Delegate Handler
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
 	[_objAlertView dismissWithClickedButtonIndex:0 animated:false];
@@ -141,6 +159,42 @@
 	[objAlert release];
 
 	CFRunLoopStop(CFRunLoopGetCurrent());
+}
+
+- (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {
+	UILabel * lblBorder = (UILabel *) [_objAlertView viewWithTag:210];
+	UILabel * lblProgress = (UILabel *) [_objAlertView viewWithTag:211];
+
+	if (lblBorder == nil) {
+		lblBorder = [[UILabel alloc] initWithFrame:CGRectMake(20, _objAlertView.bounds.size.height - 40, _objAlertView.bounds.size.width - 40, 15)];
+		[lblBorder setTag:210];
+		[lblBorder setBackgroundColor:[UIColor darkGrayColor]];
+		[[lblBorder layer] setBorderWidth:1];
+		[[lblBorder layer] setBorderColor:[[UIColor darkGrayColor] CGColor]];
+		[[lblBorder layer] setCornerRadius:8];
+		[_objAlertView addSubview:lblBorder];
+		[lblBorder autorelease];
+
+		lblProgress = [[UILabel alloc] initWithFrame:CGRectMake(20, _objAlertView.bounds.size.height - 40, 0, 15)];
+		[lblProgress setTag:211];
+		[lblProgress setBackgroundColor:[UIColor whiteColor]];
+		[[lblProgress layer] setBorderWidth:1];
+		[[lblProgress layer] setBorderColor:[[UIColor whiteColor] CGColor]];
+		[[lblProgress layer] setCornerRadius:8];
+		[_objAlertView addSubview:lblProgress];
+		[lblProgress autorelease];
+	}
+
+	// Calculate Completion Percentage
+	CGFloat fltComplete = 0;
+	if (totalBytesExpectedToWrite > 0) {
+		fltComplete = (1.0 * totalBytesWritten) / (1.0 * totalBytesExpectedToWrite);
+	} else if (_intRequestDataSize > 0) {
+		fltComplete = (1.0 * totalBytesWritten) / (1.0 * _intRequestDataSize);
+	}
+
+	[lblProgress setFrame:CGRectMake(lblProgress.frame.origin.x, lblProgress.frame.origin.y, fltComplete * lblBorder.frame.size.width, lblProgress.frame.size.height)];	
+	NSLog(@"UPLOAD: %i / %i or %i", totalBytesWritten, totalBytesExpectedToWrite, _intRequestDataSize);
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {

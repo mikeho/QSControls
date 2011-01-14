@@ -25,6 +25,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import <QuartzCore/QuartzCore.h>
 
 @interface QSModalHttpClient : NSObject {
 	NSString * _strUrl;
@@ -37,6 +38,7 @@
 	NSInteger _intHttpStatusCode;
 	NSMutableData * _objResponseData;
 
+	NSInteger _intRequestDataSize;
 	UIAlertView * _objAlertView;
 	CFRunLoopRef _objCurrentLoop;
 }
@@ -54,7 +56,11 @@
 - (QSModalHttpClient *)initWithUrl:(NSString *)strUrl HttpMethod:(NSString *)strHttpMethod;
 
 - (void)cleanupFromPreviousRequests;
+
+- (void)sendWithData:(id)objRequestContent StreamFlag:(bool)blnStreamFlag;
 - (void)sendString:(NSString *)strRequest;
 - (void)sendFile:(NSString *)strPath;
+
+- (NSString *)getResponseAsString;
 
 @end
