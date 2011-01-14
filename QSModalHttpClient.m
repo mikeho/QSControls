@@ -24,6 +24,7 @@
  */
 
 #import "QSControls.h"
+#import "QSUtilities.h"
 
 @implementation QSModalHttpClient
 
@@ -127,13 +128,9 @@
 	[self sendWithData:[strRequest dataUsingEncoding:NSUTF8StringEncoding] StreamFlag:false];
 }
 
-- (void)sendFile:(NSString *)strPath {
-	NSFileManager * objFileManager = [[NSFileManager alloc] init];
-	NSDictionary * dctFileAttributes = [objFileManager attributesOfItemAtPath:strPath error:NULL];
-	[objFileManager release];
-	
-	_intRequestDataSize = [dctFileAttributes fileSize];
-	[self sendWithData:[NSInputStream inputStreamWithFileAtPath:strPath] StreamFlag:true];
+- (void)sendFile:(NSString *)strFilePath {
+	_intRequestDataSize = [QSFileManager fileSize:strFilePath];
+	[self sendWithData:[NSInputStream inputStreamWithFileAtPath:strFilePath] StreamFlag:true];
 }
 
 #pragma mark -
