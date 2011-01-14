@@ -48,8 +48,6 @@
 		[self setHttpMethod:strHttpMethod];
 		[self setTimeoutInterval:60];
 
-//		_objCurrentLoop = CFRunLoopGetCurrent();
-
 		return self;
 	}
 
@@ -138,8 +136,15 @@
 	[self sendWithData:[NSInputStream inputStreamWithFileAtPath:strPath] StreamFlag:true];
 }
 
+#pragma mark -
+#pragma mark Response Getters
+
 - (NSString *)getResponseAsString {
-	return @"Hello, world!";
+	return [[[NSString alloc] initWithData:_objResponseData encoding:NSUTF8StringEncoding] autorelease];
+}
+
+- (NSData *)getResponseAsRawData {
+	return [NSData dataWithData:_objResponseData];
 }
 
 #pragma mark -
@@ -162,12 +167,12 @@
 }
 
 - (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {
-	UILabel * lblBorder = (UILabel *) [_objAlertView viewWithTag:210];
-	UILabel * lblProgress = (UILabel *) [_objAlertView viewWithTag:211];
+	UILabel * lblBorder = (UILabel *) [_objAlertView viewWithTag:kProgressBarBackground];
+	UILabel * lblProgress = (UILabel *) [_objAlertView viewWithTag:kProgressBarProgress];
 
 	if (lblBorder == nil) {
 		lblBorder = [[UILabel alloc] initWithFrame:CGRectMake(20, _objAlertView.bounds.size.height - 40, _objAlertView.bounds.size.width - 40, 15)];
-		[lblBorder setTag:210];
+		[lblBorder setTag:kProgressBarBackground];
 		[lblBorder setBackgroundColor:[UIColor darkGrayColor]];
 		[[lblBorder layer] setBorderWidth:1];
 		[[lblBorder layer] setBorderColor:[[UIColor darkGrayColor] CGColor]];
@@ -176,7 +181,7 @@
 		[lblBorder autorelease];
 
 		lblProgress = [[UILabel alloc] initWithFrame:CGRectMake(20, _objAlertView.bounds.size.height - 40, 0, 15)];
-		[lblProgress setTag:211];
+		[lblProgress setTag:kProgressBarProgress];
 		[lblProgress setBackgroundColor:[UIColor whiteColor]];
 		[[lblProgress layer] setBorderWidth:1];
 		[[lblProgress layer] setBorderColor:[[UIColor whiteColor] CGColor]];
@@ -194,66 +199,17 @@
 	}
 
 	[lblProgress setFrame:CGRectMake(lblProgress.frame.origin.x, lblProgress.frame.origin.y, fltComplete * lblBorder.frame.size.width, lblProgress.frame.size.height)];	
-	NSLog(@"UPLOAD: %i / %i or %i", totalBytesWritten, totalBytesExpectedToWrite, _intRequestDataSize);
+//	NSLog(@"UPLOAD: %i / %i or %i", totalBytesWritten, totalBytesExpectedToWrite, _intRequestDataSize);
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
-//	NSMutableString * strResponse =	[[NSMutableString alloc] initWithData:_objData encoding:NSASCIIStringEncoding];
-//	
-//	// Remove the Wait Icon
-//	[_objAlertView dismissWithClickedButtonIndex:0 animated:false];
-//	
-//	// Process Successful Status Code
-//	if ((_intStatusCode >= 200) && (_intStatusCode < 300)) {
-//		NSInteger intUserId = 0;
-//		NSString * strError = nil;
-//		NSString * strCoachName = nil;
-//		CXMLDocument *objXmlDocument = [[CXMLDocument alloc] initWithXMLString:strResponse options:0 error:nil];
-//		
-//		if (objXmlDocument != nil) {
-//			CXMLElement * objNode = (CXMLElement *)[objXmlDocument nodeForXPath:@"//loginResponse" error:nil];
-//			intUserId = [[[objNode attributeForName:@"userId"] stringValue] intValue];
-//			strCoachName = [[objNode attributeForName:@"coachName"] stringValue];
-//			strError = [[objNode attributeForName:@"error"] stringValue];
-//		}
-//		
-//		[objXmlDocument release];
-//		
-//		// Valid Credentials?
-//		if (intUserId > 0) {
-//			// Save Cached Credentials
-//			TextFieldFormItem * objUsername = (TextFieldFormItem *)[_objForm getFormItemWithKey:@"username"];
-//			TextFieldFormItem * objPassword = (TextFieldFormItem *)[_objForm getFormItemWithKey:@"password"];
-//			
-//			[[IosPreference get] Username:[objUsername Value]];
-//			[[IosPreference get] CoachName:strCoachName];
-//			[[IosPreference get] PasswordCache:[objPassword Value]];
-//			[[IosPreference get] DateLastPasswordUpdate:[NSDate date]];
-//			[[IosPreference get] save];
-//			
-//			[self processSuccessfulLogin];
-//			
-//			// Invalid -- display Error
-//		} else {
-//			UIAlertView * objAlert = [[UIAlertView alloc] initWithTitle:@"Login Error"
-//																message:strError
-//															   delegate:nil
-//													  cancelButtonTitle:@"Okay"
-//													  otherButtonTitles:nil];
-//			[objAlert show];
-//			[objAlert release];
-//		}
-//		
-//		// Process INVALID HTTP Status Code
-//	} else {
-//		UIAlertView * objAlert = [[UIAlertView alloc] initWithTitle:@"Connection Error"
-//															message:[NSString stringWithFormat:@"Received error status code '%d' from the VeriFacts Server.", _intStatusCode]
-//														   delegate:nil
-//												  cancelButtonTitle:@"Okay"
-//												  otherButtonTitles:nil];
-//		[objAlert show];
-//		[objAlert release];
-//	}
+	// Cleanup
+	[_objAlertView dismissWithClickedButtonIndex:0 animated:false];
+	[_objAlertView release];
+	_objAlertView = nil;
+
+	// Return back to the loop
+	CFRunLoopStop(CFRunLoopGetCurrent());
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
@@ -276,7 +232,7 @@
 		[_objAlertView setTitle:_strMessage];
 
 	// Update Progress
-	UILabel * lblProgress = (UILabel *) [_objAlertView viewWithTag:211];
+	UILabel * lblProgress = (UILabel *) [_objAlertView viewWithTag:kProgressBarProgress];
 	[lblProgress setFrame:CGRectMake(lblProgress.frame.origin.x, lblProgress.frame.origin.y, 0, lblProgress.frame.size.height)];		
 }
 
@@ -284,8 +240,8 @@
 	[_objResponseData appendData:data];
 
 	// Update Progress
-	UILabel * lblBorder = (UILabel *) [_objAlertView viewWithTag:210];
-	UILabel * lblProgress = (UILabel *) [_objAlertView viewWithTag:211];
+	UILabel * lblBorder = (UILabel *) [_objAlertView viewWithTag:kProgressBarBackground];
+	UILabel * lblProgress = (UILabel *) [_objAlertView viewWithTag:kProgressBarProgress];
 
 	CGFloat fltComplete = 0;
 	if (_intResponseDataSize > 0) {
@@ -293,7 +249,7 @@
 	}
 	
 	[lblProgress setFrame:CGRectMake(lblProgress.frame.origin.x, lblProgress.frame.origin.y, fltComplete * lblBorder.frame.size.width, lblProgress.frame.size.height)];	
-	NSLog(@"DOWNLOAD: %i / %i", [_objResponseData length], _intResponseDataSize);
+//	NSLog(@"DOWNLOAD: %i / %i", [_objResponseData length], _intResponseDataSize);
 }
 
 #pragma mark -

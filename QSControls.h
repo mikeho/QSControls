@@ -37,5 +37,8 @@
 
 #define kWaitScreenTag 10001
 #define kWaitScreenSpinner 10002
+#define kProgressBarBackground 10003
+#define kProgressBarProgress 10004
+
 
 #endif __QSCONTROLS_INCLUDE__
