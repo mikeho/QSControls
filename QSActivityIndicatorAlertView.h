@@ -1,5 +1,5 @@
 /**
- * QSActivityIndicators.h
+ * QSActivityIndicatorAlertView.h
  * 
  * Copyright (c) 2010 - 2011, Quasidea Development, LLC
  * For more information, please go to http://www.quasidea.com/
@@ -28,7 +28,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 
-@interface QSActivityIndicators : NSObject {
+@interface QSActivityIndicatorAlertView : NSObject {
 
 }
 

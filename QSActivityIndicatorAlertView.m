@@ -1,5 +1,5 @@
 /**
- * QSActivityIndicators.m
+ * QSActivityIndicatorAlertView.m
  * 
  * Copyright (c) 2010 - 2011, Quasidea Development, LLC
  * For more information, please go to http://www.quasidea.com/
@@ -25,7 +25,7 @@
 
 #import "QSControls.h"
 
-@implementation QSActivityIndicators
+@implementation QSActivityIndicatorAlertView
 
 
 + (UIAlertView *)displayAsAlertWithText:(NSString *)strText {
@@ -36,8 +36,7 @@
 	UIActivityIndicatorView * objWaitIcon = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
 	[objWaitIcon setTag:kWaitScreenSpinner];
 
-	//	objWaitIcon.center = CGPointMake(objAlertView.bounds.size.width / 2.0f, objAlertView.bounds.size.height - 40.0f);
-	objWaitIcon.center = CGPointMake(284 / 2.0f, 135 - 40.0f);
+	objWaitIcon.center = CGPointMake(objView.bounds.size.width / 2.0f, objView.bounds.size.height - 40.0f);
 	[objWaitIcon startAnimating];
 	
 	[objView addSubview:objWaitIcon];

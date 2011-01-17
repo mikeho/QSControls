@@ -28,7 +28,7 @@
 
 // All Utilities Classes Go Here
 #import "QSButtons.h"
-#import "QSActivityIndicators.h"
+#import "QSActivityIndicatorAlertView.h"
 #import "QSLabels.h"
 #import "QSModalHttpClient.h"
 
