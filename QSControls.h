@@ -40,6 +40,6 @@
 #define kProgressBarBackground 10003
 #define kProgressBarProgress 10004
 
-#define QSCONTROLS_LOG 0
+// #define QSCONTROLS_LOG 1
 
 #endif __QSCONTROLS_INCLUDE__
