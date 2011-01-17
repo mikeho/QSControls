@@ -29,6 +29,7 @@
 @interface QSModalHttpClient (private) 
 - (bool)sendWithData:(id)objRequestContent StreamFlag:(bool)blnStreamFlag;
 - (void)dismissAlertView;
+- (void)adjustAlertView;
 @end
 
 @implementation QSModalHttpClient
@@ -125,6 +126,9 @@
 	[_objAlertView addSubview:objProgressView];
 	[objProgressView release];
 	
+	// Adjust
+	[self performSelector:@selector(adjustAlertView) withObject:nil afterDelay:0.5];
+	
 	// Generate the Request
 	NSURL * objUrl = [[NSURL alloc] initWithString:_strUrl];
 	NSMutableURLRequest * objRequest = [[NSMutableURLRequest alloc] initWithURL:objUrl];
@@ -151,6 +155,14 @@
 	
 	// the most simplistic way of determining whether or not there is an "error"
 	return ((_intHttpStatusCode >= 200) && (_intHttpStatusCode < 300));
+}
+
+- (void)adjustAlertView {
+	UIActivityIndicatorView * objWaitIcon = (UIActivityIndicatorView *) [_objAlertView viewWithTag:kWaitScreenSpinner];
+	UIProgressView * objProgressView = (UIProgressView *) [_objAlertView viewWithTag:kHttpProgressView];
+
+	objWaitIcon.center = CGPointMake(_objAlertView.bounds.size.width / 2.0f, _objAlertView.bounds.size.height - 70.0f);
+	[objProgressView setFrame:CGRectMake(20, _objAlertView.bounds.size.height - 40, _objAlertView.bounds.size.width - 40, 90)];
 }
 
 - (void)dismissAlertView {
