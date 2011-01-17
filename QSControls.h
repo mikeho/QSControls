@@ -39,6 +39,7 @@
 #define kWaitScreenSpinner 10002
 #define kProgressBarBackground 10003
 #define kProgressBarProgress 10004
+#define kHttpProgressView 10005
 
 // #define QSCONTROLS_LOG 1
 

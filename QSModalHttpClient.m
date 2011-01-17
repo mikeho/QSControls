@@ -169,27 +169,14 @@
 }
 
 - (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {
-	UILabel * lblBorder = (UILabel *) [_objAlertView viewWithTag:kProgressBarBackground];
-	UILabel * lblProgress = (UILabel *) [_objAlertView viewWithTag:kProgressBarProgress];
+	UIProgressView * objProgressView = (UIProgressView *)[_objAlertView viewWithTag:kHttpProgressView];
 
-	if (lblBorder == nil) {
-		lblBorder = [[UILabel alloc] initWithFrame:CGRectMake(20, _objAlertView.bounds.size.height - 40, _objAlertView.bounds.size.width - 40, 15)];
-		[lblBorder setTag:kProgressBarBackground];
-		[lblBorder setBackgroundColor:[UIColor darkGrayColor]];
-		[[lblBorder layer] setBorderWidth:1];
-		[[lblBorder layer] setBorderColor:[[UIColor darkGrayColor] CGColor]];
-		[[lblBorder layer] setCornerRadius:8];
-		[_objAlertView addSubview:lblBorder];
-		[lblBorder autorelease];
-
-		lblProgress = [[UILabel alloc] initWithFrame:CGRectMake(20, _objAlertView.bounds.size.height - 40, 0, 15)];
-		[lblProgress setTag:kProgressBarProgress];
-		[lblProgress setBackgroundColor:[UIColor whiteColor]];
-		[[lblProgress layer] setBorderWidth:1];
-		[[lblProgress layer] setBorderColor:[[UIColor whiteColor] CGColor]];
-		[[lblProgress layer] setCornerRadius:8];
-		[_objAlertView addSubview:lblProgress];
-		[lblProgress autorelease];
+	if (objProgressView == nil) {
+		UIProgressView * objProgressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleBar];
+		[objProgressView setTag:kHttpProgressView];
+		[objProgressView setFrame:CGRectMake(20, _objAlertView.bounds.size.height - 40, _objAlertView.bounds.size.width - 40, 90)];
+		[_objAlertView addSubview:objProgressView];
+		[objProgressView autorelease];
 	}
 
 	// Calculate Completion Percentage
@@ -200,8 +187,8 @@
 		fltComplete = (1.0 * totalBytesWritten) / (1.0 * _intRequestDataSize);
 	}
 
-	[lblProgress setFrame:CGRectMake(lblProgress.frame.origin.x, lblProgress.frame.origin.y, fltComplete * lblBorder.frame.size.width, lblProgress.frame.size.height)];	
-	
+	[objProgressView setProgress:fltComplete];
+
 #ifdef QSCONTROLS_LOG
 	NSLog(@"UPLOAD: %i / %i or %i", totalBytesWritten, totalBytesExpectedToWrite, _intRequestDataSize);
 #endif QSCONTROLS_LOG
@@ -252,23 +239,21 @@
 		[_objAlertView setTitle:_strMessage];
 
 	// Update Progress
-	UILabel * lblProgress = (UILabel *) [_objAlertView viewWithTag:kProgressBarProgress];
-	[lblProgress setFrame:CGRectMake(lblProgress.frame.origin.x, lblProgress.frame.origin.y, 0, lblProgress.frame.size.height)];		
+	UIProgressView * objProgressView = (UIProgressView *)[_objAlertView viewWithTag:kHttpProgressView];
+	[objProgressView setProgress:0.0f];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
 	[_objResponseData appendData:data];
 
 	// Update Progress
-	UILabel * lblBorder = (UILabel *) [_objAlertView viewWithTag:kProgressBarBackground];
-	UILabel * lblProgress = (UILabel *) [_objAlertView viewWithTag:kProgressBarProgress];
-
 	CGFloat fltComplete = 0;
 	if (_intResponseDataSize > 0) {
 		fltComplete = (1.0 * [_objResponseData length]) / (1.0 * _intResponseDataSize);
 	}
 
-	[lblProgress setFrame:CGRectMake(lblProgress.frame.origin.x, lblProgress.frame.origin.y, fltComplete * lblBorder.frame.size.width, lblProgress.frame.size.height)];	
+	UIProgressView * objProgressView = (UIProgressView *)[_objAlertView viewWithTag:kHttpProgressView];
+	[objProgressView setProgress:fltComplete];
 
 #ifdef QSCONTROLS_LOG
 	NSLog(@"DOWNLOAD: %i / %i", [_objResponseData length], _intResponseDataSize);
