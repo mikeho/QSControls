@@ -28,6 +28,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 @interface QSModalHttpClient : NSObject {
+@private
 	NSString * _strUrl;
 	NSString * _strHttpMethod;
 	NSInteger _intTimeoutInterval;
@@ -57,7 +58,6 @@
 
 - (void)cleanupFromPreviousRequests;
 
-- (bool)sendWithData:(id)objRequestContent StreamFlag:(bool)blnStreamFlag;
 - (bool)sendString:(NSString *)strRequest;
 - (bool)sendFile:(NSString *)strFilePath;
 

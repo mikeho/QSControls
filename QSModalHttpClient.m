@@ -26,6 +26,11 @@
 #import "QSControls.h"
 #import "QSUtilities.h"
 
+@interface QSModalHttpClient (private) 
+- (bool)sendWithData:(id)objRequestContent StreamFlag:(bool)blnStreamFlag;
+- (void)dismissAlertView;
+@end
+
 @implementation QSModalHttpClient
 
 @synthesize _strUrl;
@@ -72,6 +77,19 @@
 #pragma mark -
 #pragma mark Pubic Execution Methods
 
+- (bool)sendString:(NSString *)strRequest {
+	return [self sendWithData:[strRequest dataUsingEncoding:NSUTF8StringEncoding] StreamFlag:false];
+}
+
+- (bool)sendFile:(NSString *)strFilePath {
+	_intRequestDataSize = [QSFileManager fileSize:strFilePath];
+	return [self sendWithData:[NSInputStream inputStreamWithFileAtPath:strFilePath] StreamFlag:true];
+}
+
+#pragma mark -
+#pragma mark Private Helpers
+
+
 - (bool)sendWithData:(id)objRequestContent StreamFlag:(bool)blnStreamFlag {
 	// Cleanup from Previous Requests (if applicable)
 	[self cleanupFromPreviousRequests];
@@ -91,16 +109,22 @@
 	
 	_objAlertView = [[UIAlertView alloc] initWithTitle:strMessage message:@"\n" delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
 	[_objAlertView show];
-
+	
 	// Add the "Spinner"
 	UIActivityIndicatorView * objWaitIcon = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
 	[objWaitIcon setTag:kWaitScreenSpinner];
 	objWaitIcon.center = CGPointMake(_objAlertView.bounds.size.width / 2.0f, _objAlertView.bounds.size.height - 70.0f);
-//	objWaitIcon.center = CGPointMake(284 / 2.0f, 135 - 40.0f);
 	[objWaitIcon startAnimating];
 	[_objAlertView addSubview:objWaitIcon];
 	[objWaitIcon release];
-
+	
+	// Add Progress Bar
+	UIProgressView * objProgressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleBar];
+	[objProgressView setTag:kHttpProgressView];
+	[objProgressView setFrame:CGRectMake(20, _objAlertView.bounds.size.height - 40, _objAlertView.bounds.size.width - 40, 90)];
+	[_objAlertView addSubview:objProgressView];
+	[objProgressView release];
+	
 	// Generate the Request
 	NSURL * objUrl = [[NSURL alloc] initWithString:_strUrl];
 	NSMutableURLRequest * objRequest = [[NSMutableURLRequest alloc] initWithURL:objUrl];
@@ -112,7 +136,7 @@
 	} else {
 		[objRequest setHTTPBody:objRequestContent];
 	}
-
+	
 	NSURLConnection * objConnection = [[NSURLConnection alloc] initWithRequest:objRequest delegate:self];
 	
 	// Perform the Request
@@ -124,18 +148,21 @@
 	[objUrl release];
 	[objRequest release];
 	[objConnection release];
-
+	
 	// the most simplistic way of determining whether or not there is an "error"
 	return ((_intHttpStatusCode >= 200) && (_intHttpStatusCode < 300));
 }
 
-- (bool)sendString:(NSString *)strRequest {
-	return [self sendWithData:[strRequest dataUsingEncoding:NSUTF8StringEncoding] StreamFlag:false];
-}
+- (void)dismissAlertView {
+	if (_objAlertView != nil) {
+		for (UIView * objView in [_objAlertView subviews]) {
+			[objView removeFromSuperview];
+		}
 
-- (bool)sendFile:(NSString *)strFilePath {
-	_intRequestDataSize = [QSFileManager fileSize:strFilePath];
-	return [self sendWithData:[NSInputStream inputStreamWithFileAtPath:strFilePath] StreamFlag:true];
+		[_objAlertView dismissWithClickedButtonIndex:0 animated:true];
+		[_objAlertView release];
+		_objAlertView = nil;
+	}
 }
 
 #pragma mark -
@@ -153,9 +180,7 @@
 #pragma mark Server Connection Delegate Handler
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
-	[_objAlertView dismissWithClickedButtonIndex:0 animated:false];
-	[_objAlertView release];
-	_objAlertView = nil;
+	[self dismissAlertView];
 
 	UIAlertView * objAlert = [[UIAlertView alloc] initWithTitle:@"Connection Error"
 														message:@"Could not connect to the server."
@@ -170,14 +195,6 @@
 
 - (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {
 	UIProgressView * objProgressView = (UIProgressView *)[_objAlertView viewWithTag:kHttpProgressView];
-
-	if (objProgressView == nil) {
-		UIProgressView * objProgressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleBar];
-		[objProgressView setTag:kHttpProgressView];
-		[objProgressView setFrame:CGRectMake(20, _objAlertView.bounds.size.height - 40, _objAlertView.bounds.size.width - 40, 90)];
-		[_objAlertView addSubview:objProgressView];
-		[objProgressView autorelease];
-	}
 
 	// Calculate Completion Percentage
 	CGFloat fltComplete = 0;
@@ -196,9 +213,7 @@
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
 	// Cleanup
-	[_objAlertView dismissWithClickedButtonIndex:0 animated:false];
-	[_objAlertView release];
-	_objAlertView = nil;
+	[self dismissAlertView];
 
 	// Check Status Code
 	if ((_intHttpStatusCode >= 200) && (_intHttpStatusCode < 300)) {
