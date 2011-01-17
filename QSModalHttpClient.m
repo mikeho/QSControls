@@ -201,7 +201,10 @@
 	}
 
 	[lblProgress setFrame:CGRectMake(lblProgress.frame.origin.x, lblProgress.frame.origin.y, fltComplete * lblBorder.frame.size.width, lblProgress.frame.size.height)];	
-//	NSLog(@"UPLOAD: %i / %i or %i", totalBytesWritten, totalBytesExpectedToWrite, _intRequestDataSize);
+	
+#ifdef QSCONTROLS_LOG
+	NSLog(@"UPLOAD: %i / %i or %i", totalBytesWritten, totalBytesExpectedToWrite, _intRequestDataSize);
+#endif QSCONTROLS_LOG
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
@@ -264,9 +267,12 @@
 	if (_intResponseDataSize > 0) {
 		fltComplete = (1.0 * [_objResponseData length]) / (1.0 * _intResponseDataSize);
 	}
-	
+
 	[lblProgress setFrame:CGRectMake(lblProgress.frame.origin.x, lblProgress.frame.origin.y, fltComplete * lblBorder.frame.size.width, lblProgress.frame.size.height)];	
-//	NSLog(@"DOWNLOAD: %i / %i", [_objResponseData length], _intResponseDataSize);
+
+#ifdef QSCONTROLS_LOG
+	NSLog(@"DOWNLOAD: %i / %i", [_objResponseData length], _intResponseDataSize);
+#endif QSCONTROLS_LOG
 }
 
 #pragma mark -
