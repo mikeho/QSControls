@@ -25,24 +25,38 @@
 
 #import "QSControls.h"
 
+@interface QSActivityIndicatorAlertView (private)
+- (void)adjustAlertViewSpinner;
+@end
+
 @implementation QSActivityIndicatorAlertView
 
-
-+ (UIAlertView *)displayAsAlertWithText:(NSString *)strText {
-	UIAlertView * objView = [[[UIAlertView alloc] initWithTitle:strText message:nil delegate:self cancelButtonTitle:nil otherButtonTitles: nil] autorelease];
+- (QSActivityIndicatorAlertView *)initWithTitle:(NSString *)strTitle Message:(NSString *)strMessage {
+	QSActivityIndicatorAlertView * objView = (QSActivityIndicatorAlertView *) [super initWithTitle:strTitle message:strMessage delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
 	[objView show];
-
+	
 	// Create and add the activity indicator
 	UIActivityIndicatorView * objWaitIcon = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
 	[objWaitIcon setTag:kWaitScreenSpinner];
-
+	
 	objWaitIcon.center = CGPointMake(objView.bounds.size.width / 2.0f, objView.bounds.size.height - 40.0f);
 	[objWaitIcon startAnimating];
 	
 	[objView addSubview:objWaitIcon];
 	[objWaitIcon release];
-	
-	
+
+	[self performSelector:@selector(adjustAlertViewSpinner) withObject:nil afterDelay:0.5f];
+	return self;
+}
+
+- (void)adjustAlertViewSpinner {
+	UIActivityIndicatorView * objWaitIcon = (UIActivityIndicatorView *) [self viewWithTag:kWaitScreenSpinner];
+	objWaitIcon.center = CGPointMake(self.bounds.size.width / 2.0f, self.bounds.size.height - 40.0f);	
+}
+
++ (UIAlertView *)displayAsAlertWithText:(NSString *)strText {
+	QSActivityIndicatorAlertView * objView = [[QSActivityIndicatorAlertView alloc] initWithTitle:strText Message:nil];
+	[objView autorelease];
 	return objView;
 }
 

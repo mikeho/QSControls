@@ -28,10 +28,9 @@
 #import <QuartzCore/QuartzCore.h>
 
 
-@interface QSActivityIndicatorAlertView : NSObject {
-
+@interface QSActivityIndicatorAlertView : UIAlertView {
 }
 
-+ (UIAlertView *)displayAsAlertWithText:(NSString *)strText;
-+ (UIView *)createFullScreenWithText:(NSString *)strText;
++ (QSActivityIndicatorAlertView *)displayAsAlertWithText:(NSString *)strText;
+- (QSActivityIndicatorAlertView *)initWithTitle:(NSString *)strTitle Message:(NSString *)strMessage;
 @end
