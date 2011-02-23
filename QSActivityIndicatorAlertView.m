@@ -25,6 +25,8 @@
 
 #import "QSControls.h"
 
+static QSActivityIndicatorAlertView * _qsActivityIndicatorAlertView;
+
 @interface QSActivityIndicatorAlertView (private)
 - (void)adjustAlertViewSpinner;
 @end
@@ -33,6 +35,7 @@
 
 - (QSActivityIndicatorAlertView *)initWithTitle:(NSString *)strTitle Message:(NSString *)strMessage {
 	QSActivityIndicatorAlertView * objView = (QSActivityIndicatorAlertView *) [super initWithTitle:strTitle message:strMessage delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
+	[objView setTag:kWaitScreenTag];
 	[objView show];
 	
 	// Create and add the activity indicator
@@ -56,8 +59,16 @@
 
 + (UIAlertView *)displayAsAlertWithText:(NSString *)strText {
 	QSActivityIndicatorAlertView * objView = [[QSActivityIndicatorAlertView alloc] initWithTitle:strText Message:nil];
-	[objView autorelease];
+	_qsActivityIndicatorAlertView = objView;
 	return objView;
+}
+
++ (void)removeAlert {
+	if (_qsActivityIndicatorAlertView) {
+		[_qsActivityIndicatorAlertView dismissWithClickedButtonIndex:0 animated:true];
+		[_qsActivityIndicatorAlertView release];
+		_qsActivityIndicatorAlertView = nil;
+	}
 }
 
 + (UIView *)createFullScreenWithText:(NSString *)strText {
