@@ -61,7 +61,7 @@
 	[objView addSubview:lblTitle];
 
 	// Set up the Content Background Panel
-	UIView * pnlContent = [[UIView alloc] initWithFrame:CGRectMake(kSideMargin * 3, fltCurrentY + 18, [UIScreen mainScreen].bounds.size.width - kSideMargin * 4, 200)];
+	UIView * pnlContent = [[UIView alloc] initWithFrame:CGRectMake(kSideMargin * 3, fltCurrentY + 18, [UIScreen mainScreen].bounds.size.width - kSideMargin * 4, 5000)];
 	[pnlContent setBackgroundColor:[UIColor colorWithWhite:1.0 alpha:0.75]];
 	[pnlContent.layer setCornerRadius:5];
 	[pnlContent.layer setMasksToBounds:true];
@@ -71,7 +71,7 @@
 	[objView addSubview:pnlContent];
 	
 	// Set up the Content Text
-	UILabel * lblContent = [[UILabel alloc] initWithFrame:CGRectMake(kSideMargin, kTopMargin / 2, [UIScreen mainScreen].bounds.size.width - kSideMargin * 6, 200)];
+	UILabel * lblContent = [[UILabel alloc] initWithFrame:CGRectMake(kSideMargin, kTopMargin / 2, [UIScreen mainScreen].bounds.size.width - kSideMargin * 6, 5000)];
 	[lblContent setLineBreakMode:UILineBreakModeWordWrap];
 	[lblContent setNumberOfLines:0];
 	[lblContent setText:strContent];
