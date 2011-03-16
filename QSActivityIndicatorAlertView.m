@@ -71,6 +71,12 @@ static QSActivityIndicatorAlertView * _qsActivityIndicatorAlertView;
 	}
 }
 
++ (void)updateMessage:(NSString *)strText {
+	if (_qsActivityIndicatorAlertView) {
+		[_qsActivityIndicatorAlertView setTitle:strText];
+	}
+}
+
 + (UIView *)createFullScreenWithText:(NSString *)strText {
 	UIView * objView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height)];
 	[objView setBackgroundColor:[UIColor colorWithWhite:0.0 alpha:0.6]];
