@@ -154,6 +154,24 @@
 	CFRunLoopRun();
 	
 	// Cleanup
+	[self dismissAlertView];
+
+	// Check Status Code
+	if ((_intHttpStatusCode >= 200) && (_intHttpStatusCode < 300)) {
+		// Looks good!
+		// At this point, we don't need to do anything
+	} else {
+		// Oops -- an HTTP status code indicating an issue / error
+		UIAlertView * objAlert = [[UIAlertView alloc] initWithTitle:@"Connection Error"
+															message:[NSString stringWithFormat:@"Received error status code '%d' from the server.", _intHttpStatusCode]
+														   delegate:nil
+												  cancelButtonTitle:@"Okay"
+												  otherButtonTitles:nil];
+		[objAlert show];
+		[objAlert release];
+	}
+	
+	// More Cleanup
 	[objUrl release];
 	[objRequest release];
 	[objConnection release];
@@ -229,24 +247,6 @@
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
-	// Cleanup
-	[self dismissAlertView];
-
-	// Check Status Code
-	if ((_intHttpStatusCode >= 200) && (_intHttpStatusCode < 300)) {
-		// Looks good!
-		// At this point, we don't need to do anything
-	} else {
-		// Oops -- an HTTP status code indicating an issue / error
-		UIAlertView * objAlert = [[UIAlertView alloc] initWithTitle:@"Connection Error"
-															message:[NSString stringWithFormat:@"Received error status code '%d' from the server.", _intHttpStatusCode]
-														   delegate:nil
-												  cancelButtonTitle:@"Okay"
-												  otherButtonTitles:nil];
-		[objAlert show];
-		[objAlert release];
-	}
-
 	// Return back to the loop
 	CFRunLoopStop(_objRunLoop);
 }
@@ -302,7 +302,11 @@
 	[self setMessageDuringUpload:nil];
 
 	[_objResponseData release];
+	_objResponseData = nil;
+	
+	[self dismissAlertView];
 	[_objAlertView release];
+	_objAlertView = nil;
 
 	[super dealloc];
 }
