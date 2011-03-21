@@ -92,8 +92,10 @@
 
 
 - (bool)sendWithData:(id)objRequestContent StreamFlag:(bool)blnStreamFlag {
-	// Cleanup from Previous Requests (if applicable)
-	[self cleanupFromPreviousRequests];
+	// Can only be used once
+	if (_objResponseData != nil) {
+		NSAssert(false, @"QSModalHttpClient instance already used");
+	}
 	
 	// Store the reference to the current runloop
 	_objRunLoop = CFRunLoopGetCurrent();
