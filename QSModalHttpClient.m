@@ -95,6 +95,9 @@
 	// Cleanup from Previous Requests (if applicable)
 	[self cleanupFromPreviousRequests];
 	
+	// Store the reference to the current runloop
+	_objRunLoop = CFRunLoopGetCurrent();
+	
 	// Setup the Response Data Placeholder
 	_objResponseData = [[NSMutableData alloc] init];
 	
@@ -202,7 +205,7 @@
 	[objAlert show];
 	[objAlert release];
 
-	CFRunLoopStop(CFRunLoopGetCurrent());
+	CFRunLoopStop(_objRunLoop);
 }
 
 - (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {
@@ -243,7 +246,7 @@
 	}
 
 	// Return back to the loop
-	CFRunLoopStop(CFRunLoopGetCurrent());
+	CFRunLoopStop(_objRunLoop);
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
