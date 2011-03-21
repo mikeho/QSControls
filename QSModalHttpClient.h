@@ -27,8 +27,21 @@
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
 
+@class QSModalHttpClient;
+
+@protocol QSModalHttpClientDelegate
+
+- (void)httpClientComplete:(QSModalHttpClient *)objModalHttpClient;
+
+@end
+
+
 @interface QSModalHttpClient : NSObject {
 @private
+	NSURLConnection * _objConnection;
+	NSURL * _objUrl;
+	NSMutableURLRequest * _objRequest;
+	
 	NSString * _strUrl;
 	NSString * _strHttpMethod;
 	NSInteger _intTimeoutInterval;
@@ -43,7 +56,11 @@
 	NSInteger _intResponseDataSize;
 	UIAlertView * _objAlertView;
 	
-	CFRunLoopRef _objRunLoop;
+	NSInteger _intPrimaryTag;
+	NSInteger _intSecondaryTag;
+	NSString * _strStringTag;
+	
+	id <QSModalHttpClientDelegate> _objDelegate;
 }
 
 @property (nonatomic, retain, getter=url, setter=setUrl) NSString * _strUrl;
@@ -56,6 +73,11 @@
 @property (nonatomic, assign, getter=httpStatusCode) NSInteger _intHttpStatusCode;
 @property (nonatomic, retain, getter=responseData) NSData * _objResponseData;
 
+@property (nonatomic, retain, getter=stringTag, setter=setStringTag) NSString * _strStringTag;
+@property (nonatomic, assign, getter=primaryTag, setter=setPrimaryTag) NSInteger _intPrimaryTag;
+@property (nonatomic, assign, getter=secondaryTag, setter=setSecondaryTag) NSInteger _intSecondaryTag;
+@property (nonatomic, assign /* weakref */, getter=delegate, setter=setDelegate) id <QSModalHttpClientDelegate> _objDelegate;
+
 - (QSModalHttpClient *)initWithUrl:(NSString *)strUrl HttpMethod:(NSString *)strHttpMethod;
 
 - (void)cleanupFromPreviousRequests;
@@ -65,5 +87,6 @@
 
 - (NSString *)getResponseAsString;
 - (NSData *)getResponseAsRawData;
+- (bool)isSuccessful;
 
 @end

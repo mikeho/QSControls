@@ -44,6 +44,10 @@
 @synthesize _intHttpStatusCode;
 @synthesize _objResponseData;
 
+@synthesize _strStringTag;
+@synthesize _intPrimaryTag;
+@synthesize _intSecondaryTag;
+@synthesize _objDelegate;
 
 #pragma mark -
 #pragma mark Initializers and Housekeeping
@@ -53,7 +57,7 @@
 	if ([self init]) {
 		[self setUrl:strUrl];
 		[self setHttpMethod:strHttpMethod];
-		[self setTimeoutInterval:60];
+		[self setTimeoutInterval:5];
 
 		return self;
 	}
@@ -93,12 +97,9 @@
 
 - (bool)sendWithData:(id)objRequestContent StreamFlag:(bool)blnStreamFlag {
 	// Can only be used once
-	if (_objResponseData != nil) {
+	if (_objConnection != nil) {
 		NSAssert(false, @"QSModalHttpClient instance already used");
 	}
-	
-	// Store the reference to the current runloop
-	_objRunLoop = CFRunLoopGetCurrent();
 	
 	// Setup the Response Data Placeholder
 	_objResponseData = [[NSMutableData alloc] init];
@@ -132,52 +133,26 @@
 	[objProgressView release];
 	
 	// Adjust
-	[self performSelector:@selector(adjustAlertView) withObject:nil afterDelay:0.5];
+//	[self performSelector:@selector(adjustAlertView) withObject:nil afterDelay:0.5];
 	
 	// Generate the Request
-	NSURL * objUrl = [[NSURL alloc] initWithString:_strUrl];
-	NSMutableURLRequest * objRequest = [[NSMutableURLRequest alloc] initWithURL:objUrl];
-	[objRequest setTimeoutInterval:_intTimeoutInterval];
-	[objRequest setHTTPMethod:_strHttpMethod];
+	_objUrl = [[NSURL alloc] initWithString:_strUrl];
+	_objRequest = [[NSMutableURLRequest alloc] initWithURL:_objUrl];
+	[_objRequest setTimeoutInterval:_intTimeoutInterval];
+	[_objRequest setHTTPMethod:_strHttpMethod];
 	
 	if (blnStreamFlag) {
-		[objRequest setHTTPBodyStream:objRequestContent];
+		[_objRequest setHTTPBodyStream:objRequestContent];
 	} else {
-		[objRequest setHTTPBody:objRequestContent];
+		[_objRequest setHTTPBody:objRequestContent];
 	}
 	
-	NSURLConnection * objConnection = [[NSURLConnection alloc] initWithRequest:objRequest delegate:self];
+	_objConnection = [[NSURLConnection alloc] initWithRequest:_objRequest delegate:self];
 	
 	// Perform the Request
-	[objConnection start];
+	[_objConnection start];
 	
-	CFRunLoopRun();
-	
-	// Cleanup
-	[self dismissAlertView];
-
-	// Check Status Code
-	if ((_intHttpStatusCode >= 200) && (_intHttpStatusCode < 300)) {
-		// Looks good!
-		// At this point, we don't need to do anything
-	} else {
-		// Oops -- an HTTP status code indicating an issue / error
-		UIAlertView * objAlert = [[UIAlertView alloc] initWithTitle:@"Connection Error"
-															message:[NSString stringWithFormat:@"Received error status code '%d' from the server.", _intHttpStatusCode]
-														   delegate:nil
-												  cancelButtonTitle:@"Okay"
-												  otherButtonTitles:nil];
-		[objAlert show];
-		[objAlert release];
-	}
-	
-	// More Cleanup
-	[objUrl release];
-	[objRequest release];
-	[objConnection release];
-	
-	// the most simplistic way of determining whether or not there is an "error"
-	return ((_intHttpStatusCode >= 200) && (_intHttpStatusCode < 300));
+	return false;
 }
 
 - (void)adjustAlertView {
@@ -203,6 +178,10 @@
 #pragma mark -
 #pragma mark Response Getters
 
+- (bool)isSuccessful {
+	return (_intHttpStatusCode >= 200) && (_intHttpStatusCode < 300);
+}
+
 - (NSString *)getResponseAsString {
 	return [[[NSString alloc] initWithData:_objResponseData encoding:NSUTF8StringEncoding] autorelease];
 }
@@ -224,8 +203,6 @@
 											  otherButtonTitles:nil];
 	[objAlert show];
 	[objAlert release];
-
-	CFRunLoopStop(_objRunLoop);
 }
 
 - (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {
@@ -247,8 +224,25 @@
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
-	// Return back to the loop
-	CFRunLoopStop(_objRunLoop);
+	// Cleanup
+	[self dismissAlertView];
+	
+	// Check Status Code
+	if ((_intHttpStatusCode >= 200) && (_intHttpStatusCode < 300)) {
+		// Looks good!
+		// At this point, we don't need to do anything
+	} else {
+		// Oops -- an HTTP status code indicating an issue / error
+		UIAlertView * objAlert = [[UIAlertView alloc] initWithTitle:@"Connection Error"
+															message:[NSString stringWithFormat:@"Received error status code '%d' from the server.", _intHttpStatusCode]
+														   delegate:nil
+												  cancelButtonTitle:@"Okay"
+												  otherButtonTitles:nil];
+		[objAlert show];
+		[objAlert release];
+	}
+
+	[_objDelegate httpClientComplete:self];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
@@ -296,6 +290,8 @@
 #pragma mark Class Lifecycle
 
 - (void)dealloc {
+	[self setStringTag:nil];
+
 	[self setUrl:nil];
 	[self setHttpMethod:nil];
 	[self setMessage:nil];
@@ -307,7 +303,16 @@
 	[self dismissAlertView];
 	[_objAlertView release];
 	_objAlertView = nil;
-
+	
+	[_objConnection release];
+	_objConnection = nil;
+	
+	[_objUrl release];
+	_objUrl = nil;
+	
+	[_objRequest release];
+	_objRequest = nil;
+	
 	[super dealloc];
 }
 
