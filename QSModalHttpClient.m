@@ -133,7 +133,7 @@
 	[objProgressView release];
 	
 	// Adjust
-//	[self performSelector:@selector(adjustAlertView) withObject:nil afterDelay:0.5];
+	[self performSelector:@selector(adjustAlertView) withObject:nil afterDelay:0.5];
 	
 	// Generate the Request
 	_objUrl = [[NSURL alloc] initWithString:_strUrl];
