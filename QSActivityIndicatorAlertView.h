@@ -33,6 +33,7 @@
 
 + (QSActivityIndicatorAlertView *)displayAsAlertWithText:(NSString *)strText;
 + (void)removeAlert;
++ (void)updateMessage:(NSString *)strText;
 
 - (QSActivityIndicatorAlertView *)initWithTitle:(NSString *)strTitle Message:(NSString *)strMessage;
 @end

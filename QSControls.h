@@ -31,6 +31,7 @@
 #import "QSActivityIndicatorAlertView.h"
 #import "QSLabels.h"
 #import "QSModalHttpClient.h"
+#import "QSSourcedImageView.h"
 
 #define kSideMargin 10
 #define kTopMargin 10
