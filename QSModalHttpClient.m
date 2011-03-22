@@ -133,7 +133,8 @@
 	[objProgressView release];
 	
 	// Adjust
-	[self performSelector:@selector(adjustAlertView) withObject:nil afterDelay:0.5];
+	[self performSelector:@selector(adjustAlertView) withObject:nil afterDelay:0.25];
+	[self performSelector:@selector(adjustAlertView) withObject:nil afterDelay:0.65];
 	
 	// Generate the Request
 	_objUrl = [[NSURL alloc] initWithString:_strUrl];
@@ -156,11 +157,13 @@
 }
 
 - (void)adjustAlertView {
-	UIActivityIndicatorView * objWaitIcon = (UIActivityIndicatorView *) [_objAlertView viewWithTag:kWaitScreenSpinner];
-	UIProgressView * objProgressView = (UIProgressView *) [_objAlertView viewWithTag:kHttpProgressView];
+	if (_objAlertView) {
+		UIActivityIndicatorView * objWaitIcon = (UIActivityIndicatorView *) [_objAlertView viewWithTag:kWaitScreenSpinner];
+		UIProgressView * objProgressView = (UIProgressView *) [_objAlertView viewWithTag:kHttpProgressView];
 
-	objWaitIcon.center = CGPointMake(_objAlertView.bounds.size.width / 2.0f, _objAlertView.bounds.size.height - 70.0f);
-	[objProgressView setFrame:CGRectMake(20, _objAlertView.bounds.size.height - 40, _objAlertView.bounds.size.width - 40, 90)];
+		if (objWaitIcon) objWaitIcon.center = CGPointMake(_objAlertView.bounds.size.width / 2.0f, _objAlertView.bounds.size.height - 70.0f);
+		if (objProgressView) [objProgressView setFrame:CGRectMake(20, _objAlertView.bounds.size.height - 40, _objAlertView.bounds.size.width - 40, 90)];
+	}
 }
 
 - (void)dismissAlertView {

@@ -48,13 +48,14 @@ static QSActivityIndicatorAlertView * _qsActivityIndicatorAlertView;
 	[objView addSubview:objWaitIcon];
 	[objWaitIcon release];
 
-	[self performSelector:@selector(adjustAlertViewSpinner) withObject:nil afterDelay:0.5f];
+	[self performSelector:@selector(adjustAlertViewSpinner) withObject:nil afterDelay:0.25f];
+	[self performSelector:@selector(adjustAlertViewSpinner) withObject:nil afterDelay:0.65f];
 	return self;
 }
 
 - (void)adjustAlertViewSpinner {
 	UIActivityIndicatorView * objWaitIcon = (UIActivityIndicatorView *) [self viewWithTag:kWaitScreenSpinner];
-	objWaitIcon.center = CGPointMake(self.bounds.size.width / 2.0f, self.bounds.size.height - 40.0f);	
+	if (objWaitIcon) objWaitIcon.center = CGPointMake(self.bounds.size.width / 2.0f, self.bounds.size.height - 40.0f);	
 }
 
 + (UIAlertView *)displayAsAlertWithText:(NSString *)strText {
