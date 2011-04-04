@@ -14,6 +14,7 @@
 	NSString * _strUrl;
 	NSString * _strNullImageName;
 	NSString * _strInvalidImageName;
+	QSHttpClient * _objHttpClient;
 }
 
 -(QSSourcedImageView *)initWithPath:(NSString *)strPath Url:(NSString *)strUrl NullImageName:(NSString *)strNullImageName InvalidImageName:(NSString *)strInvalidImageName;

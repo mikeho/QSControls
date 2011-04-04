@@ -31,10 +31,9 @@
 		
 		if (![[NSFileManager defaultManager] fileExistsAtPath:strPath isDirectory:false]) {
 			// Go Ahead and Download the Image
-			QSHttpClient * objHttpClient = [(QSHttpClient *)[QSHttpClient alloc] initWithUrl:strUrl HttpMethod:@"GET"];
-			[objHttpClient setDelegate:self];
-			[objHttpClient sendString:@""];
-			[objHttpClient release];
+			_objHttpClient = [(QSHttpClient *)[QSHttpClient alloc] initWithUrl:strUrl HttpMethod:@"GET"];
+			[_objHttpClient setDelegate:self];
+			[_objHttpClient sendString:@""];
 		}
 		
 		return self;
@@ -45,11 +44,17 @@
 
 - (void)httpClient:(QSHttpClient *)objHttpClient ErrorReceived:(NSString *)strError {
 	[self setImage:[UIImage imageNamed:_strInvalidImageName]];
+	[_objHttpClient setDelegate:nil];
+	[_objHttpClient release];
+	_objHttpClient = nil;
 }
 
 - (void)httpClientResponseReceived:(QSHttpClient *)objHttpClient {
 	[[NSFileManager defaultManager] createFileAtPath:_strLocalPath contents:[objHttpClient getResponseAsRawData] attributes:nil];
 	[self setImage:[UIImage imageWithContentsOfFile:_strLocalPath]];
+	[_objHttpClient setDelegate:nil];
+	[_objHttpClient release];
+	_objHttpClient = nil;
 }
 
 -(void)dealloc {
@@ -57,6 +62,11 @@
 	[_strUrl release];
 	[_strNullImageName release];
 	[_strInvalidImageName release];
+	if (_objHttpClient) {
+		[_objHttpClient setDelegate:nil];
+		[_objHttpClient release];
+		_objHttpClient = nil;
+	}
 	[super dealloc];
 }
 
