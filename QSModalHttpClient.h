@@ -84,6 +84,7 @@
 
 - (bool)sendString:(NSString *)strRequest;
 - (bool)sendFile:(NSString *)strFilePath;
+- (bool)sendData:(NSData *)objData;
 
 - (NSString *)getResponseAsString;
 - (NSData *)getResponseAsRawData;

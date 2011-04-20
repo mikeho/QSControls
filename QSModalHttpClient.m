@@ -91,6 +91,11 @@
 	return [self sendWithData:[NSInputStream inputStreamWithFileAtPath:strFilePath] StreamFlag:true];
 }
 
+- (bool)sendData:(NSData *)objData {
+	_intRequestDataSize = [objData length];
+	return [self sendWithData:objData StreamFlag:false];
+}
+
 #pragma mark -
 #pragma mark Private Helpers
 
@@ -149,10 +154,14 @@
 	}
 	
 	_objConnection = [[NSURLConnection alloc] initWithRequest:_objRequest delegate:self];
-	
+
+#ifdef QSCONTROLS_LOG
+	NSLog(@"Submitting Request of Size: %i To Location: %@", _intRequestDataSize, _strUrl);
+#endif QSCONTROLS_LOG
+
 	// Perform the Request
 	[_objConnection start];
-	
+
 	return false;
 }
 
