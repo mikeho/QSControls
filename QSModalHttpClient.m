@@ -108,7 +108,7 @@
 	NSString * strMessage;
 	if (_strMessageDuringUpload == nil) {
 		if (_strMessage == nil)
-			strMessage = @"Please wait...";
+			strMessage = NSLocalizedString(@"Please wait...", nil);
 		else
 			strMessage = _strMessage;
 	} else
@@ -199,10 +199,10 @@
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
 	[self dismissAlertView];
 
-	UIAlertView * objAlert = [[UIAlertView alloc] initWithTitle:@"Connection Error"
-														message:@"Could not connect to the server."
+	UIAlertView * objAlert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Connection Error", nil)
+														message:NSLocalizedString(@"Could not connect to the server.", nil)
 													   delegate:nil
-											  cancelButtonTitle:@"Okay"
+											  cancelButtonTitle:NSLocalizedString(@"Okay", nil)
 											  otherButtonTitles:nil];
 	[objAlert show];
 	[objAlert release];
@@ -236,10 +236,10 @@
 		// At this point, we don't need to do anything
 	} else {
 		// Oops -- an HTTP status code indicating an issue / error
-		UIAlertView * objAlert = [[UIAlertView alloc] initWithTitle:@"Connection Error"
-															message:[NSString stringWithFormat:@"Received error status code '%d' from the server.", _intHttpStatusCode]
+		UIAlertView * objAlert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Connection Error", nil)
+															message:[NSString stringWithFormat:NSLocalizedString(@"Received error status code '%d' from the server.", nil), _intHttpStatusCode]
 														   delegate:nil
-												  cancelButtonTitle:@"Okay"
+												  cancelButtonTitle:NSLocalizedString(@"Okay", nil)
 												  otherButtonTitles:nil];
 		[objAlert show];
 		[objAlert release];
@@ -263,7 +263,7 @@
 	
 	// Update Messaging
 	if (_strMessage == nil)
-		[_objAlertView setTitle:@"Please wait..."];
+		[_objAlertView setTitle:NSLocalizedString(@"Please wait...", nil)];
 	else
 		[_objAlertView setTitle:_strMessage];
 
