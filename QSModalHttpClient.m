@@ -215,6 +215,8 @@
 											  otherButtonTitles:nil];
 	[objAlert show];
 	[objAlert release];
+	
+	[_objDelegate httpClientComplete:self];
 }
 
 - (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {
