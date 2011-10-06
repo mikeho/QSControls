@@ -1,5 +1,5 @@
 /**
- * QSControls.h
+ * QSButtons.m
  * 
  * Copyright (c) 2010 - 2011, Quasidea Development, LLC
  * For more information, please go to http://www.quasidea.com/
@@ -23,26 +23,30 @@
  * THE SOFTWARE.
  */
 
-#ifndef __QSCONTROLS_INCLUDE__
-#define __QSCONTROLS_INCLUDE__
+#import "QSControls.h"
 
-// All Utilities Classes Go Here
-#import "QSBarButtonItems.h"
-#import "QSButtons.h"
-#import "QSActivityIndicatorAlertView.h"
-#import "QSLabels.h"
-#import "QSModalHttpClient.h"
-#import "QSSourcedImageView.h"
+@implementation QSBarButtonItems
 
-#define kSideMargin 10
-#define kTopMargin 10
++ (UIBarButtonItem *)createToolbarButtonWithText:(NSString *)strText {
+	CGSize objSize = [strText sizeWithFont:[UIFont boldSystemFontOfSize:[UIFont smallSystemFontSize]]];
+	UILabel * lblTitle = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, objSize.width, objSize.height)];
+	[lblTitle setFont:[UIFont boldSystemFontOfSize:[UIFont smallSystemFontSize]]];
+	[lblTitle setTextColor:[UIColor whiteColor]];
+	[lblTitle setBackgroundColor:[UIColor clearColor]];
 
-#define kWaitScreenTag 10001
-#define kWaitScreenSpinner 10002
-#define kProgressBarBackground 10003
-#define kProgressBarProgress 10004
-#define kHttpProgressView 10005
+	[lblTitle setText:strText];
+	
+	UIBarButtonItem * btnTitle = [[UIBarButtonItem alloc] initWithCustomView:lblTitle];
+	[lblTitle release];
 
-// #define QSCONTROLS_LOG 1
+	return [btnTitle autorelease];
+}
 
-#endif __QSCONTROLS_INCLUDE__
++(UIBarButtonItem *)createToolbarButtonWithText:(NSString *)strText target:(id)objTarget action:(SEL)objSelector {
+	UIBarButtonItem * btnToReturn = [self createToolbarButtonWithText:strText];
+	[btnToReturn setTarget:objTarget];
+	[btnToReturn setAction:objSelector];
+	return btnToReturn;
+}
+
+@end

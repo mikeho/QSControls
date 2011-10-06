@@ -1,5 +1,5 @@
 /**
- * QSControls.h
+ * QSBarButtonItems.h
  * 
  * Copyright (c) 2010 - 2011, Quasidea Development, LLC
  * For more information, please go to http://www.quasidea.com/
@@ -23,26 +23,13 @@
  * THE SOFTWARE.
  */
 
-#ifndef __QSCONTROLS_INCLUDE__
-#define __QSCONTROLS_INCLUDE__
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
-// All Utilities Classes Go Here
-#import "QSBarButtonItems.h"
-#import "QSButtons.h"
-#import "QSActivityIndicatorAlertView.h"
-#import "QSLabels.h"
-#import "QSModalHttpClient.h"
-#import "QSSourcedImageView.h"
+@interface QSBarButtonItems : NSObject {
+}
 
-#define kSideMargin 10
-#define kTopMargin 10
++(UIBarButtonItem *)createToolbarButtonWithText:(NSString *)strText;
++(UIBarButtonItem *)createToolbarButtonWithText:(NSString *)strText target:(id)objTarget action:(SEL)objSelector;
 
-#define kWaitScreenTag 10001
-#define kWaitScreenSpinner 10002
-#define kProgressBarBackground 10003
-#define kProgressBarProgress 10004
-#define kHttpProgressView 10005
-
-// #define QSCONTROLS_LOG 1
-
-#endif __QSCONTROLS_INCLUDE__
+@end
