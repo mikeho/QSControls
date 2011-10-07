@@ -43,10 +43,22 @@
 }
 
 +(UIBarButtonItem *)createToolbarButtonWithText:(NSString *)strText target:(id)objTarget action:(SEL)objSelector {
-	UIBarButtonItem * btnToReturn = [self createToolbarButtonWithText:strText];
-	[btnToReturn setTarget:objTarget];
-	[btnToReturn setAction:objSelector];
-	return btnToReturn;
+	CGSize objSize = [strText sizeWithFont:[UIFont boldSystemFontOfSize:[UIFont smallSystemFontSize]]];
+	UILabel * lblTitle = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, objSize.width, objSize.height)];
+	[lblTitle setFont:[UIFont boldSystemFontOfSize:[UIFont smallSystemFontSize]]];
+	[lblTitle setTextColor:[UIColor whiteColor]];
+	[lblTitle setBackgroundColor:[UIColor clearColor]];
+	
+	[lblTitle setText:strText];
+	
+	UIButton * btnTitle = [UIButton buttonWithType:UIButtonTypeCustom];
+	[btnTitle setFrame:[lblTitle frame]];
+	[btnTitle addSubview:lblTitle];
+	[lblTitle release];
+	[btnTitle addTarget:objTarget action:objSelector forControlEvents:UIControlEventTouchUpInside];
+
+	UIBarButtonItem * btnToReturn = [[UIBarButtonItem alloc] initWithCustomView:btnTitle];
+	return [btnToReturn autorelease];
 }
 
 @end
