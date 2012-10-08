@@ -63,20 +63,20 @@
 	id <QSModalHttpClientDelegate> _objDelegate;
 }
 
-@property (nonatomic, retain, getter=url, setter=setUrl) NSString * _strUrl;
-@property (nonatomic, retain, getter=httpMethod, setter=setHttpMethod) NSString * _strHttpMethod;
-@property (nonatomic, assign, getter=timeoutInterval, setter=setTimeoutInterval) NSInteger _intTimeoutInterval;
+@property (nonatomic, retain, getter=url, setter=setUrl:) NSString * _strUrl;
+@property (nonatomic, retain, getter=httpMethod, setter=setHttpMethod:) NSString * _strHttpMethod;
+@property (nonatomic, assign, getter=timeoutInterval, setter=setTimeoutInterval:) NSInteger _intTimeoutInterval;
 
-@property (nonatomic, retain, getter=message, setter=setMessage) NSString * _strMessage;
-@property (nonatomic, retain, getter=messageDuringUpload, setter=setMessageDuringUpload) NSString * _strMessageDuringUpload;
+@property (nonatomic, retain, getter=message, setter=setMessage:) NSString * _strMessage;
+@property (nonatomic, retain, getter=messageDuringUpload, setter=setMessageDuringUpload:) NSString * _strMessageDuringUpload;
 
 @property (nonatomic, assign, getter=httpStatusCode) NSInteger _intHttpStatusCode;
 @property (nonatomic, retain, getter=responseData) NSData * _objResponseData;
 
-@property (nonatomic, retain, getter=stringTag, setter=setStringTag) NSString * _strStringTag;
-@property (nonatomic, assign, getter=primaryTag, setter=setPrimaryTag) NSInteger _intPrimaryTag;
-@property (nonatomic, assign, getter=secondaryTag, setter=setSecondaryTag) NSInteger _intSecondaryTag;
-@property (nonatomic, assign /* weakref */, getter=delegate, setter=setDelegate) id <QSModalHttpClientDelegate> _objDelegate;
+@property (nonatomic, retain, getter=stringTag, setter=setStringTag:) NSString * _strStringTag;
+@property (nonatomic, assign, getter=primaryTag, setter=setPrimaryTag:) NSInteger _intPrimaryTag;
+@property (nonatomic, assign, getter=secondaryTag, setter=setSecondaryTag:) NSInteger _intSecondaryTag;
+@property (nonatomic, assign /* weakref */, getter=delegate, setter=setDelegate:) id <QSModalHttpClientDelegate> _objDelegate;
 
 - (QSModalHttpClient *)initWithUrl:(NSString *)strUrl HttpMethod:(NSString *)strHttpMethod;
 
