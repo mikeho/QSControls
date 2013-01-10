@@ -45,4 +45,4 @@
 
 // #define QSCONTROLS_LOG 1
 
-#endif __QSCONTROLS_INCLUDE__
+#endif

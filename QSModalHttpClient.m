@@ -157,7 +157,7 @@
 
 #ifdef QSCONTROLS_LOG
 	NSLog(@"Submitting Request of Size: %i To Location: %@", _intRequestDataSize, _strUrl);
-#endif QSCONTROLS_LOG
+#endif
 
 	// Perform the Request
 	[_objConnection start];
@@ -234,7 +234,7 @@
 
 #ifdef QSCONTROLS_LOG
 	NSLog(@"UPLOAD: %i / %i or %i", totalBytesWritten, totalBytesExpectedToWrite, _intRequestDataSize);
-#endif QSCONTROLS_LOG
+#endif //QSCONTROLS_LOG
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
@@ -297,7 +297,7 @@
 
 #ifdef QSCONTROLS_LOG
 	NSLog(@"DOWNLOAD: %i / %i", [_objResponseData length], _intResponseDataSize);
-#endif QSCONTROLS_LOG
+#endif //QSCONTROLS_LOG
 }
 
 #pragma mark -
